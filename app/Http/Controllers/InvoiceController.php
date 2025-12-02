@@ -76,7 +76,7 @@ class InvoiceController extends Controller
             InvoiceItem::create([
                 'invoice_id'  => $invoice->id,
                 'service_id'  => $item['service_id'] ?? null,
-                'description' => $item['description'],
+                'description' => $item['description'] ?? 'N/A',
                 'quantity'    => $item['quantity'],
                 'unit_price'  => $item['unit_price'],
                 'tax_rate'    => $item['tax_rate'],
@@ -139,7 +139,7 @@ class InvoiceController extends Controller
             InvoiceItem::create([
                 'invoice_id' => $invoice->id,
                 'service_id' => $item['service_id'] ?? null,
-                'description' => $item['description'],
+                'description' => $item['description'] ?? 'N/A',
                 'quantity'    => $item['quantity'],
                 'unit_price'  => $item['unit_price'],
                 'tax_rate'    => $item['tax_rate'],
