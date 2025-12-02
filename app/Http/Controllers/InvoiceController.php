@@ -8,6 +8,7 @@ use App\Models\Invoice;
 use App\Models\InvoiceItem;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class InvoiceController extends Controller
 {
@@ -106,7 +107,6 @@ class InvoiceController extends Controller
     {
         $invoice = Invoice::findOrFail($id);
 
-        // BLOCK EDIT IF PAID
         if ($invoice->status === 'paid') {
             return redirect()->back()->with('error', 'Paid invoices cannot be edited.');
         }
@@ -164,5 +164,15 @@ class InvoiceController extends Controller
     {
         $invoice = Invoice::with(['customer', 'items.service'])->findOrFail($id);
         return view('invoices.print', compact('invoice'));
+    }
+
+    public function downloadPDF($id)
+    {
+        $invoice = Invoice::with(['customer', 'items.service'])->findOrFail($id);
+
+        $pdf = Pdf::loadView('invoices.pdf', compact('invoice'))
+                  ->setPaper('a4', 'portrait');
+
+        return $pdf->download('Invoice-' . $invoice->invoice_no . '.pdf');
     }
 }

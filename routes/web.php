@@ -11,24 +11,26 @@ use App\Http\Middleware\AdminOnly;
 use Illuminate\Support\Facades\Mail;
 
 
-// HOME → redirect to login
+// ---------------------------------------------
+// HOME → LOGIN
+// ---------------------------------------------
 Route::get('/', function () {
     return redirect()->route('login');
 });
 
 
-// ---------------------------
+// ---------------------------------------------
 // USER DASHBOARD
-// ---------------------------
+// ---------------------------------------------
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])
         ->name('dashboard');
 });
 
 
-// ---------------------------
-// PROFILE
-// ---------------------------
+// ---------------------------------------------
+// PROFILE ROUTES
+// ---------------------------------------------
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
@@ -36,42 +38,44 @@ Route::middleware('auth')->group(function () {
 });
 
 
-// ---------------------------
+// ---------------------------------------------
 // CUSTOMERS
-// ---------------------------
+// ---------------------------------------------
 Route::middleware('auth')->group(function () {
     Route::resource('customers', CustomerController::class);
 });
 
 
-// ---------------------------
+// ---------------------------------------------
 // SERVICES
-// ---------------------------
+// ---------------------------------------------
 Route::middleware('auth')->group(function () {
     Route::resource('services', ServiceController::class);
 });
 
 
-// ---------------------------
+// ---------------------------------------------
 // INVOICES
-// ---------------------------
+// ---------------------------------------------
 Route::middleware('auth')->group(function () {
 
     Route::resource('invoices', InvoiceController::class);
 
+    // Print view
     Route::get('/invoices/{id}/print', 
         [InvoiceController::class, 'print']
     )->name('invoices.print');
 
+    // PDF download (NEW)
     Route::get('/invoices/{id}/pdf', 
         [InvoiceController::class, 'downloadPDF']
     )->name('invoices.pdf');
 });
 
 
-// ---------------------------
+// ---------------------------------------------
 // PAYMENTS (placeholder)
-// ---------------------------
+// ---------------------------------------------
 Route::middleware('auth')->group(function () {
     Route::get('/payments', function () {
         return view('payments.index');
@@ -79,9 +83,9 @@ Route::middleware('auth')->group(function () {
 });
 
 
-// ---------------------------
+// ---------------------------------------------
 // SETTINGS (placeholder)
-// ---------------------------
+// ---------------------------------------------
 Route::middleware('auth')->group(function () {
     Route::get('/settings', function () {
         return view('settings.index');
@@ -89,9 +93,9 @@ Route::middleware('auth')->group(function () {
 });
 
 
-// ---------------------------
+// ---------------------------------------------
 // TEST MAIL
-// ---------------------------
+// ---------------------------------------------
 Route::get('/test-mail', function () {
     try {
         Mail::raw('Test email from Laravel Mailtrap', function ($message) {
@@ -104,22 +108,24 @@ Route::get('/test-mail', function () {
 });
 
 
-// ---------------------------
-// ADMIN PANEL (Simple version)
-// ---------------------------
+// ---------------------------------------------
+// ADMIN PANEL
+// ---------------------------------------------
 Route::middleware(['auth', AdminOnly::class])
     ->prefix('admin')
     ->name('admin.')
     ->group(function () {
 
-        // SIMPLE ADMIN DASHBOARD
+        // Admin dashboard
         Route::get('/dashboard', [AdminDashboardController::class, 'index'])
             ->name('dashboard');
 
-        // ADMIN USERS MANAGEMENT
+        // Manage Users
         Route::resource('users', \App\Http\Controllers\Admin\UserController::class);
     });
 
 
+// ---------------------------------------------
 // AUTH ROUTES
+// ---------------------------------------------
 require __DIR__.'/auth.php';
